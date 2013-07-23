@@ -1,4 +1,11 @@
 
+0.3.0 / 2013-07-23
+==================
+
+  * Fixed callsite version >= 1.0.0
+  * Added console.format
+  * Added stack for https://github.com/visionmedia/debug
+
 0.2.1 / 2012-07-06
 ==================
 

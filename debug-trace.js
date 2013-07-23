@@ -5,12 +5,10 @@
 
 var callsite = require('callsite')
   , tty = require('tty')
+  , moment = require('moment')
   , isatty = Boolean(tty.isatty() && process.stdout.getWindowSize)
   , defaultColors = { log: '90', error: '91', warn: '93', info: '96', trace: '90' }
 
-console.traceOptions = Object.create(null);
-console.traceOptions.cwd = process.cwd() + '/';
-console.traceOptions.colors = true;
 
 /**
  * Store custom options
@@ -20,10 +18,13 @@ console.traceOptions.colors = true;
  */
 
 module.exports = function (options) {
-  if (options) {
-    options.cwd = options.cwd || console.traceOptions.cwd;
-    console.traceOptions = options;
-  }
+  options = options || {};
+  console.traceOptions = console.traceOptions || {};
+  console.traceOptions.cwd        = options.cwd         ||  process.cwd() + '/';
+  console.traceOptions.colors     = options.colors      || undefined;
+  console.traceOptions.always     = options.always      || false;
+  console.traceOptions.right     = options.right        || false;
+  console.traceOptions.dateFormat = options.dateFormat  || 'YYYY.MM.DD HH:mm:ss.SSS';
 }
 
 /**
@@ -40,7 +41,16 @@ module.exports = function (options) {
         arguments[0] = JSON.stringify(arguments[0], null, '  ');
       }
       var pad = (arguments[0] && !console.traceOptions.right || !isatty ? ' ' : '');
-      arguments[0] = console.traceFormat(__stack[1], name) + pad + arguments[0];
+      // when using the debug module: dig one level deeper in the stack
+      var stack = callsite();
+      var trace = stack[1];
+      var file = trace.getFileName() || '';
+      if(stack.length > 2 && ~file.indexOf('debug.js')){
+        trace = stack[2];
+        trace.debug = true;
+      }
+      trace.debug = trace.debug || false;
+      arguments[0] = console.traceFormat(trace, name) + pad + arguments[0];
     }
     console._trace = false;
     return fn.apply(this, arguments);
@@ -56,9 +66,14 @@ module.exports = function (options) {
  */
 
 console.traceFormat = function (call, method) {
-  var basename = call.getFileName().replace(console.traceOptions.cwd, '')
-    , str = '[' + basename + ':' + call.getLineNumber() + ']'
-    , color = '99'
+  var options = {};
+  call.filename = call.getFileName().replace(console.traceOptions.cwd, '');
+  call.method = method;
+  call.functionName = call.getFunctionName() || 'anonymous'
+  call.date = moment().format(console.traceOptions.dateFormat);
+
+  var str = console.format(call);
+  var color = '99';
 
   if (!isatty) {
     return str;
@@ -82,6 +97,17 @@ console.traceFormat = function (call, method) {
   } else {
     return '\033[' + color + 'm' + str + '\033[39m';
   }
+}
+
+
+/**
+ * Overridable string formatting function.
+ *
+ * @param {CallSite} CallSite Object pimped with additional properties.
+ * @api public
+ */
+console.format = function(c) {
+  return c.date + ": " +  c.method + " [" + c.filename + ":" + c.getLineNumber() + "] " + c.functionName;
 }
 
 /**

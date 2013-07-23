@@ -1,5 +1,5 @@
-require('./console-trace')
-require('./console-trace')({}) // should work even if I require it twice
+require('./debug-trace')
+require('./debug-trace')({}) // should work even if I require it twice
 
 process.stdout.write('\n');
 
@@ -46,7 +46,7 @@ console.traceOptions.colors = false;
 
 process.stdout.write('\n---------------------------------------------------------\n\n');
 
-require('./console-trace')({
+require('./debug-trace')({
   colors: {
     log: '35',
     warn: '35',
