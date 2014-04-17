@@ -21,8 +21,8 @@ module.exports = function (options) {
   options = options || {};
   console.traceOptions = console.traceOptions || {};
   console.traceOptions.cwd        = options.cwd         ||  process.cwd() + '/';
-  console.traceOptions.colors     = options.colors      || undefined;
-  console.traceOptions.always     = options.always      || false;
+  console.traceOptions.colors     = options.colors      || true;
+  console.traceOptions.always     = options.always      || true;
   console.traceOptions.right     = options.right        || false;
   console.traceOptions.dateFormat = options.dateFormat  || 'YYYY.MM.DD HH:mm:ss.SSS';
 }
@@ -107,8 +107,8 @@ console.traceFormat = function (call, method) {
  * @api public
  */
 console.format = function(c) {
-  return c.date + ": " +  c.method + " [" + c.filename + ":" + c.getLineNumber() + "] " + c.functionName;
-}
+  return c.date + ": [" + c.filename + ":" + c.getLineNumber() + "] " + c.functionName;
+};
 
 /**
  * Adds trace getter to the `console` object.
