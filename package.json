@@ -1,10 +1,29 @@
 {
   "name": "debug-trace",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Adds a handy `trace` flag to the console object to prepend the file and line number",
   "main": "./debug-trace",
   "dependencies": {
     "callsite": "~1.0.0",
     "moment": "~2.1.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/intesso/debug-trace"
+  },
+  "keywords": [
+    "debug",
+    "trace",
+    "callsite",
+    "formatted console",
+    "format console",
+    "line number",
+    "function name"
+  ],
+  "author": "Andi Neck",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/intesso/debug-trace/issues"
+  },
+  "homepage": "https://github.com/intesso/debug-trace"
 }
