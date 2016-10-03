@@ -6,7 +6,7 @@
 var callsite = require('callsite')
   , tty = require('tty')
   , moment = require('moment')
-  , isatty = Boolean(tty.isatty() && process.stdout.getWindowSize)
+  , isatty = Boolean(tty.isatty(2) && process.stdout.getWindowSize)
   , defaultColors = { log: '90', error: '91', warn: '93', info: '96', trace: '90' }
 
 
