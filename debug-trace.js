@@ -45,8 +45,8 @@ module.exports = function (options) {
       var stack = callsite();
       var trace = stack[1];
       var file = trace.getFileName() || '';
-      if(stack.length > 2 && ~file.indexOf('debug.js')){
-        trace = stack[2];
+      if(stack.length > 2 && ~file.indexOf('debug/node.js')){
+        trace = stack[3];
         trace.debug = true;
       }
       trace.debug = trace.debug || false;
