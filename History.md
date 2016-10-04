@@ -1,3 +1,18 @@
+2.0.0 / 2016-10-04
+==================
+
+  * Added support for browser (V8 only)
+  * Added `getDate()` method
+  * Removed `date` property
+  * Removed `moment` dependency
+  * Fixed `false` options values
+  * Fixed debug stack with checking `log` function
+
+1.0.0 / 2016-10-03
+==================
+
+  * Fixed stack for debug
+
 
 0.3.0 / 2013-07-23
 ==================

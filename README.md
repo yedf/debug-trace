@@ -2,15 +2,15 @@
 
 This fork of console-trace adds the following features:
  * work with callsite >= version 1.0.0
- * work with https://github.com/visionmedia/debug 
+ * work with https://github.com/visionmedia/debug
  (and print the caller of debug instead of console)
  * provide an easy to override formatting function `console.format` e.g.:
 
 ```javascript
   // overridable console string prefix formatting function
-  console.format = function(c) {
-    return c.date + ": " +  c.method + " [" + c.filename + ":" + c.getLineNumber() + "] " + c.functionName;
-  }
+  console.format = function (c) {
+    return c.getDate() + ": [" + c.filename + ":" + c.getLineNumber() + "] " + c.functionName;
+  };
 ```
 
 ## Available methods from [V8 JavaScript stack trace API](https://code.google.com/p/v8/wiki/JavaScriptStackTraceApi)
@@ -28,12 +28,13 @@ This fork of console-trace adds the following features:
  * isNative: is this call in native V8 code?
  * isConstructor: is this a constructor call?
 
-## Added properties
+## Additional method
+  * getDate(): actual date formatted like this: "2016-10-04 07:18:46.719"
+
+## Additional properties
   * filename: getFileName without the base path: console.traceOptions.cwd
   * method: console method name like `log`, `error` ect.
   * functionName: call.getFunctionName() || 'anonymous'
-  * date: actual date formatted with moment().format(console.traceOptions.dateFormat)
-
 
 
 Extends the native Node.JS `console` object to prefix logging functions
@@ -60,7 +61,6 @@ require('debug-trace')([options])
 * __cwd__ - (`String`: defaults to `process.cwd()`) the path that will be stripped from the callsite info
 * __colors__ - (`Boolean|Object`: defaults to `undefined`) terminal colors support flag or a custom color object
 * __right__ - (`Boolean`: defaults to false) callsite alignment flag, when true prints infos on the right
-* __dateFormat__ - (`String`: defaults to 'YYYY.MM.DD HH:mm:ss.SSS') date time format with `moment().format(...)`
 
 ### Examples:
 
@@ -131,7 +131,7 @@ I only added some functionality to the original console-trace:
 
   * [Guillermo Rauch](https://github.com/guille)
   * [Kilian Ciuffolo](https://github.com/kilianc)
-  * [Nicholas Manousos](https://github.com/nmanousos)  
+  * [Nicholas Manousos](https://github.com/nmanousos)
 
-## License 
+## License
 MIT License

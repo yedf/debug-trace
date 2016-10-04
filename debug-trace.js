@@ -5,7 +5,6 @@
 
 var callsite = require('callsite')
   , tty = require('tty')
-  , moment = require('moment')
   , isatty = Boolean(tty.isatty(2) && process.stdout.getWindowSize)
   , defaultColors = { log: '90', error: '91', warn: '93', info: '96', trace: '90' }
 
@@ -17,45 +16,43 @@ var callsite = require('callsite')
  * @api public
  */
 
-module.exports = function (options) {
+module.exports = function debugTrace(options) {
   options = options || {};
   console.traceOptions = console.traceOptions || {};
-  console.traceOptions.cwd        = options.cwd         ||  process.cwd() + '/';
-  console.traceOptions.colors     = options.colors      || true;
-  console.traceOptions.always     = options.always      || true;
-  console.traceOptions.right     = options.right        || false;
-  console.traceOptions.dateFormat = options.dateFormat  || 'YYYY.MM.DD HH:mm:ss.SSS';
+  console.traceOptions.cwd = options.cwd || process.cwd() + '/';
+  console.traceOptions.colors = typeof options.colors !== 'undefined' ? options.colors : true;
+  console.traceOptions.always = typeof options.always !== 'undefined' ? options.always : true;
+  console.traceOptions.right = typeof options.right !== 'undefined' ? options.right : false;
 }
 
-/**
- * Overrides the console methods.
- */
+  /**
+   * Overrides the console methods.
+   */
 
-;['error', 'log', 'info', 'warn', 'trace'].forEach(function (name) {
-  var fn = console[name];
-  console[name] = function () {
-    if (console._trace || console.traceOptions.always) {
-      if (Buffer.isBuffer(arguments[0])) {
-        arguments[0] = arguments[0].inspect()
-      } else if (typeof arguments[0] === 'object') {
-        arguments[0] = JSON.stringify(arguments[0], null, '  ');
+  ;['error', 'log', 'info', 'warn', 'trace'].forEach(function (name) {
+    var fn = console[name];
+    console[name] = function () {
+      if (console._trace || console.traceOptions.always) {
+        if (Buffer.isBuffer(arguments[0])) {
+          arguments[0] = arguments[0].inspect()
+        } else if (typeof arguments[0] === 'object') {
+          arguments[0] = JSON.stringify(arguments[0], null, '  ');
+        }
+        var pad = (arguments[0] && !console.traceOptions.right || !isatty ? ' ' : '');
+        // when using the debug module: dig one level deeper in the stack
+        var stack = callsite();
+        var trace = stack[1];
+        if (stack.length > 2 && trace.getFunctionName() === 'log') {
+          trace = stack[3];
+          trace.debug = true;
+        }
+        trace.debug = trace.debug || false;
+        arguments[0] = console.traceFormat(trace, name) + pad + arguments[0];
       }
-      var pad = (arguments[0] && !console.traceOptions.right || !isatty ? ' ' : '');
-      // when using the debug module: dig one level deeper in the stack
-      var stack = callsite();
-      var trace = stack[1];
-      var file = trace.getFileName() || '';
-      if(stack.length > 2 && ~file.indexOf('debug/node.js')){
-        trace = stack[3];
-        trace.debug = true;
-      }
-      trace.debug = trace.debug || false;
-      arguments[0] = console.traceFormat(trace, name) + pad + arguments[0];
+      console._trace = false;
+      return fn.apply(this, arguments);
     }
-    console._trace = false;
-    return fn.apply(this, arguments);
-  }
-});
+  });
 
 /**
  * Overridable formatting function.
@@ -70,7 +67,9 @@ console.traceFormat = function (call, method) {
   call.filename = call.getFileName().replace(console.traceOptions.cwd, '');
   call.method = method;
   call.functionName = call.getFunctionName() || 'anonymous'
-  call.date = moment().format(console.traceOptions.dateFormat);
+  call.getDate = function getDate() {
+    return new Date().toISOString().replace('T', ' ').replace('Z', '');
+  }
 
   var str = console.format(call);
   var color = '99';
@@ -90,10 +89,10 @@ console.traceFormat = function (call, method) {
   if (console.traceOptions.right) {
     var rowWidth = process.stdout.getWindowSize()[0];
     return '\033[s' + // save current position
-           '\033[' + rowWidth + 'D' + // move to the start of the line
-           '\033[' + (rowWidth - str.length) + 'C' + // align right
-           '\033[' + color + 'm' + str + '\033[39m' +
-           '\033[u'; // restore current position
+      '\033[' + rowWidth + 'D' + // move to the start of the line
+      '\033[' + (rowWidth - str.length) + 'C' + // align right
+      '\033[' + color + 'm' + str + '\033[39m' +
+      '\033[u'; // restore current position
   } else {
     return '\033[' + color + 'm' + str + '\033[39m';
   }
@@ -106,8 +105,8 @@ console.traceFormat = function (call, method) {
  * @param {CallSite} CallSite Object pimped with additional properties.
  * @api public
  */
-console.format = function(c) {
-  return c.date + ": [" + c.filename + ":" + c.getLineNumber() + "] " + c.functionName;
+console.format = function (c) {
+  return c.getDate() + ": [" + c.filename + ":" + c.getLineNumber() + "] " + c.functionName;
 };
 
 /**
@@ -116,10 +115,10 @@ console.format = function(c) {
  * @api public
  */
 
-function getter () {
+function getter() {
   this._trace = true;
   return this;
 }
 
-console.__defineGetter__('t', getter);
-console.__defineGetter__('traced', getter);
+Object.defineProperty(console, 't', { get: getter });
+Object.defineProperty(console, 'traced', { get: getter });

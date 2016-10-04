@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Adds a handy `trace` flag to the console object to prepend the file and line number",
   "main": "./debug-trace",
+  "browser": "./debug-trace-browser",
   "dependencies": {
-    "callsite": "~1.0.0",
-    "moment": "~2.1.0"
+    "callsite": "~1.0.0"
   },
   "repository": {
     "type": "git",
