@@ -1,6 +1,6 @@
 {
   "name": "debug-trace",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Adds a handy `trace` flag to the console object to prepend the file and line number",
   "main": "./debug-trace",
   "browser": "./debug-trace-browser",
