@@ -24,7 +24,7 @@ if (typeof Error.captureStackTrace === 'function') {
     var fn = console[name];
     console[name] = function () {
       if (console._trace || console.traceOptions.always) {
-        if (typeof arguments[0] === 'object') {
+        if (typeof arguments[0] === 'object' && !arguments[0].stack) {
           arguments[0] = JSON.stringify(arguments[0], null, '  ');
         }
         // when using the debug module: dig one level deeper in the stack
@@ -35,7 +35,7 @@ if (typeof Error.captureStackTrace === 'function') {
           trace.debug = true;
         }
         trace.debug = trace.debug || false;
-        arguments[0] = console.traceFormat(trace, name) + arguments[0];
+        arguments[0] = arguments[0].stack ? arguments[0] : console.traceFormat(trace, name) + arguments[0];
       }
       console._trace = false;
       return fn.apply(this, arguments);

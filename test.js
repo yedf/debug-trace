@@ -73,3 +73,6 @@ console.traced.log(['Works', 'with', 'Array']);
 
 process.stdout.write(' ');
 console.traced.log('Works with Buffer', Buffer('FooBar'));
+
+process.stdout.write(' ');
+console.traced.log(new Error('an error'));
