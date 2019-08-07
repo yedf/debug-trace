@@ -35,7 +35,7 @@ module.exports = function debugTrace(options) {
       if (console._trace || console.traceOptions.always) {
         if (Buffer.isBuffer(arguments[0])) {
           arguments[0] = arguments[0].inspect()
-        } else if (typeof arguments[0] === 'object' && !arguments[0].stack) {
+        } else if (typeof arguments[0] === 'object' && arguments[0] && !arguments[0].stack) {
           arguments[0] = JSON.stringify(arguments[0], null, '  ');
         }
         var pad = (arguments[0] && !console.traceOptions.right || !isatty ? ' ' : '');
@@ -47,7 +47,7 @@ module.exports = function debugTrace(options) {
           trace.debug = true;
         }
         trace.debug = trace.debug || false;
-        arguments[0] = arguments[0].stack ? arguments[0] : console.traceFormat(trace, name) + pad + arguments[0];
+        arguments[0] = arguments[0] && arguments[0].stack ? arguments[0] : console.traceFormat(trace, name) + pad + arguments[0];
       }
       console._trace = false;
       return fn.apply(this, arguments);
@@ -64,7 +64,7 @@ module.exports = function debugTrace(options) {
 
 console.traceFormat = function (call, method) {
   var options = {};
-  call.filename = call.getFileName().replace(console.traceOptions.cwd, '');
+  call.filename = (call.getFileName() || '').replace(console.traceOptions.cwd, '');
   call.method = method;
   call.functionName = call.getFunctionName() || 'anonymous'
   call.getDate = function getDate() {
