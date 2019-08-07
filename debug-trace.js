@@ -74,7 +74,7 @@ console.traceFormat = function (call, method) {
   var str = console.format(call);
   var color = '99';
 
-  if (!isatty) {
+  if (!isatty || process.env.IS_DOCKER) {
     return str;
   }
 
