@@ -77,6 +77,9 @@ console.traceFormat = function (call, method) {
   if (!isatty || process.env.IS_DOCKER) {
     return str;
   }
+  if (method === 'error') { // 因为k8s无法区分node的error和out，所以加上这个特殊格式
+    str = '-' + str
+  }
 
   if (console.traceOptions.colors !== false) {
     if (console.traceOptions.colors === undefined || console.traceOptions.colors[method] === undefined) {
