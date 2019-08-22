@@ -1,6 +1,6 @@
 {
-    "name": "debug-trace2",
-    "version": "2.0.8",
+    "name": "@ivy/debug",
+    "version": "2.0.9",
     "description": "Adds a handy `trace` flag to the console object to prepend the file and line number",
     "main": "./debug-trace",
     "browser": "./debug-trace-browser",
